@@ -1,5 +1,11 @@
 # Schedulo - hospitals
 
+## Dev
+
+Run `./gradlew bootRun`
+
+Then you can proceed to a browser `http://localhost:8080/graphiql`
+
 ```mermaid
 erDiagram
 Organization }o--|| Department : contains

@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+	// implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -28,13 +28,13 @@ dependencies {
   implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
 	implementation ("com.netflix.graphql.dgs:graphql-dgs-pagination")
 
-	// implementation("org.springframework.security:spring-boot-starter-security")
+	// implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-devtools")
 }
 
 tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
 		schemaPaths = mutableListOf(file("${projectDir}/src/main/resources/schema"))
-    generateClient = true
+    generateClient = false
     packageName = "com.schedulo.generated"
 		typeMapping = mutableMapOf<String, String>(
     "OrganizationConnection" to "graphql.relay.SimpleListConnection<Organization>"

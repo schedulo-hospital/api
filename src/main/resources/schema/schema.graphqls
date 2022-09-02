@@ -1,14 +1,3 @@
-type Query {
-    organizations (first: Int, last: Int, after: String): OrganizationConnection
-    organization (id: String!): Organization
-}
-
-type Mutation {
-    createOrganization (input: OrganizationInput!): Organization
-    updateOrganization (id: String!, name: String!): Organization
-    deleteOrganization (id: String!): Boolean
-}
-
 input OrganizationInput {
     name: String!
 }
@@ -28,4 +17,16 @@ type Department @connection {
 type User @connection {
     id: String!
     name: String!
+}
+
+type Query {
+    organizations (first: Int, last: Int, after: String): OrganizationConnection
+    organization (id: String!): Organization
+    currentUser: User
+}
+
+type Mutation {
+    createOrganization (input: OrganizationInput!): Organization
+    updateOrganization (id: String!, name: String!): Organization
+    deleteOrganization (id: String!): Boolean
 }

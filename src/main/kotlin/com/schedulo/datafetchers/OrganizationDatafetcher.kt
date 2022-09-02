@@ -12,7 +12,6 @@ import graphql.schema.DataFetchingEnvironment
 
 @DgsComponent
 class OrganizationDataFetcher() {
-
     @DgsQuery
     suspend fun organizations(env: DataFetchingEnvironment): Connection<Organization> {
         return SimpleListConnection(listOf(
