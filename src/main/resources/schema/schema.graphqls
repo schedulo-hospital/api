@@ -2,6 +2,11 @@ input OrganizationInput {
     name: String!
 }
 
+input LoginInput {
+    email: String!
+    password: String!
+}
+
 type Organization @connection {
     id: String!
     name: String!
@@ -25,8 +30,15 @@ type Query {
     currentUser: User
 }
 
+type LoginResponse {
+    token: String!
+    user: User!
+}
+
 type Mutation {
     createOrganization (input: OrganizationInput!): Organization
     updateOrganization (id: String!, name: String!): Organization
     deleteOrganization (id: String!): Boolean
+
+    login (input: LoginInput!): LoginResponse
 }

@@ -25,11 +25,16 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	
 	implementation(platform("com.netflix.graphql.dgs:graphql-dgs-platform-dependencies:latest.release"))
-  implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
+  	implementation("com.netflix.graphql.dgs:graphql-dgs-spring-boot-starter")
 	implementation ("com.netflix.graphql.dgs:graphql-dgs-pagination")
 
-	// implementation("org.springframework.boot:spring-boot-starter-security")
+	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-devtools")
+
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+
+	implementation("io.jsonwebtoken:jjwt:0.9.1")
+	implementation("javax.xml.bind:jaxb-api:2.1")
 }
 
 tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {

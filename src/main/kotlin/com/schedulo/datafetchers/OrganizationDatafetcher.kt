@@ -16,7 +16,7 @@ class OrganizationDataFetcher() {
     suspend fun organizations(env: DataFetchingEnvironment): Connection<Organization> {
         return SimpleListConnection(listOf(
             Organization(id = "222", name = "Stranger Things", createdBy = "Someone"),
-            Organization(id = "1", name = "Stranger Things", createdBy = "Someone")
+            Organization(id = "1", name = "Stranger Things 2", createdBy = "Someone")
         )).get(env)
     }
 
