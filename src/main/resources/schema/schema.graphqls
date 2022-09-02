@@ -7,6 +7,12 @@ input LoginInput {
     password: String!
 }
 
+input RegisterInput {
+    email: String!
+    password: String!
+    name: String
+}
+
 type Organization @connection {
     id: String!
     name: String!
@@ -41,4 +47,5 @@ type Mutation {
     deleteOrganization (id: String!): Boolean
 
     login (input: LoginInput!): LoginResponse
+    register (input: RegisterInput!): LoginResponse
 }

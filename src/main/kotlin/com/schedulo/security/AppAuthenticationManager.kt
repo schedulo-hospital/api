@@ -1,4 +1,4 @@
-package com.schedulo
+package com.schedulo.security
 
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.BadCredentialsException

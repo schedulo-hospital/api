@@ -1,8 +1,5 @@
-package com.schedulo
+package com.schedulo.security
 
-import com.schedulo.AppAuthenticationManager
-import com.schedulo.JwtTokenUtil
-import com.schedulo.JwtTokenFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
@@ -15,10 +12,6 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-// import osahner.security.JWTAuthenticationFilter
-// import osahner.security.JWTAuthorizationFilter
-// import osahner.security.TokenProvider
-// import osahner.service.AppAuthenticationManager
 
 @Configuration
 @EnableWebSecurity
@@ -36,12 +29,6 @@ class WebConfig(
       .csrf().disable()
       .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no sessions
       .and()
-      //.authorizeRequests()
-      //.antMatchers("/graphql").permitAll()
-      //.anyRequest().authenticated()
-      //.and()
-      // .addFilter(JWTAuthenticationFilter(authenticationManager, securityProperties, tokenProvider))
-      // .addFilter(JWTAuthorizationFilter(authenticationManager, securityProperties, tokenProvider))
       .addFilter(JwtTokenFilter(authenticationManager, jwtTokenUtil))
       .build()
   }

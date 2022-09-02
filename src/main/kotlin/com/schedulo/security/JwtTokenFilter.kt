@@ -1,6 +1,5 @@
-package com.schedulo
+package com.schedulo.security
 
-import com.schedulo.JwtTokenUtil
 import com.schedulo.generated.types.User
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
