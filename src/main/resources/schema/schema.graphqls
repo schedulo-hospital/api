@@ -30,15 +30,15 @@ type User @connection {
     name: String!
 }
 
+type LoginResponse {
+    token: String!
+    user: User!
+}
+
 type Query {
     organizations (first: Int, last: Int, after: String): OrganizationConnection
     organization (id: String!): Organization
     currentUser: User
-}
-
-type LoginResponse {
-    token: String!
-    user: User!
 }
 
 type Mutation {

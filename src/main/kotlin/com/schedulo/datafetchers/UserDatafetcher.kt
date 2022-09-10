@@ -45,7 +45,6 @@ class UserDataFetcher(
             throw DgsBadRequestException("Wrong password")
         }
 
-        // TODO: get user from db, check password, generate token
         val token = jwtUtil.generateToken(User(id = user.id.toString(), name = user.name))
         return LoginResponse(token = token, user = User(id = user.id.toString(), name = user.name))
     }
