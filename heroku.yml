@@ -1,0 +1,5 @@
+build:
+  config:
+    MONGODB_URI: mongodb_uri
+  docker:
+    web: Dockerfile
