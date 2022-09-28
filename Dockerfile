@@ -11,7 +11,8 @@ ENV MONGODB_URI=$mongodb_uri
 COPY . .
 RUN ./gradlew build
 
-RUN ls -la
+RUN ls -la build
+RUN ls -la build/libs
 COPY ./build/libs/Schedulo-0.0.1-SNAPSHOT.jar app.jar
 
 ENTRYPOINT ["java","-jar","/usr/app/app.jar"]
