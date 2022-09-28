@@ -30,7 +30,7 @@ class UserDataFetcher(
         val user: User = SecurityContextHolder.getContext().getAuthentication().getPrincipal() as User
         val dbUser = userRepository.findById(user.id).get()
 
-        return User(id = dbUser.id.toString(), name = dbUser.name)
+        return User(id = dbUser.id.toString(), name = dbUser.name, email = dbUser.email)
     }
 
     @DgsMutation
@@ -45,8 +45,8 @@ class UserDataFetcher(
             throw DgsBadRequestException("Wrong password")
         }
 
-        val token = jwtUtil.generateToken(User(id = user.id.toString(), name = user.name))
-        return LoginResponse(token = token, user = User(id = user.id.toString(), name = user.name))
+        val token = jwtUtil.generateToken(User(id = user.id.toString(), name = user.name, email = user.email))
+        return LoginResponse(token = token, user = User(id = user.id.toString(), name = user.name, email = user.email))
     }
 
     @DgsMutation
@@ -59,7 +59,7 @@ class UserDataFetcher(
 
         val user = userRepository.save(UserModel(email = input.email, password = input.password, name = "bleh"))
 
-        val token = jwtUtil.generateToken(User(id = user.id.toString(), name = user.name))
-        return LoginResponse(token = token, user = User(id = user.id.toString(), name = user.name))
+        val token = jwtUtil.generateToken(User(id = user.id.toString(), name = user.name, email = user.email))
+        return LoginResponse(token = token, user = User(id = user.id.toString(), name = user.name, email = user.email))
     }
 }

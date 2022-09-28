@@ -78,7 +78,7 @@ class JwtTokenUtil : Serializable {
         val userId = claims.body.subject
         val scopes = claims.body["scopes"]
           println(scopes)
-        val principal = User(userId, "???") // TODO: load user and replace real username
+        val principal = User(userId, "???", "") // TODO: load user and replace real username
         val claims1 = Arrays.asList(SimpleGrantedAuthority("ROLE_USER"))
         // val claims1 = scopes.map{s -> SimpleGrantedAuthority(s)}
         UsernamePasswordAuthenticationToken(principal, token, claims1)

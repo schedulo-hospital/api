@@ -28,6 +28,7 @@ type Department @connection {
 type User @connection {
     id: String!
     name: String!
+    email: String!
 }
 
 type LoginResponse {
