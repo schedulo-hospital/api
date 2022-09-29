@@ -6,13 +6,13 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
 @Document
-data class UserModel (
+data class DepartmentUserModel (
         @Id
         val id: ObjectId = ObjectId.get(),
-        var name: String,
-        val email: String,
-        var password: String,
-        var registered: Boolean,
+        val organisationId: ObjectId,
+        val departmentId: ObjectId,
+        val userId: ObjectId,
+        val role: Role,
         val createdDate: LocalDateTime = LocalDateTime.now(),
         val modifiedDate: LocalDateTime = LocalDateTime.now()
 )

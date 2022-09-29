@@ -1,4 +1,4 @@
-input OrganizationInput {
+input OrganisationInput {
     name: String!
 }
 
@@ -13,7 +13,7 @@ input RegisterInput {
     name: String
 }
 
-type Organization @connection {
+type Organisation @connection {
     id: String!
     name: String!
     createdBy: String!
@@ -37,15 +37,20 @@ type LoginResponse {
 }
 
 type Query {
-    organizations (first: Int, last: Int, after: String): OrganizationConnection
-    organization (id: String!): Organization
+    organisations (first: Int, last: Int, after: String): OrganisationConnection
+    organisation (id: String!): Organisation
     currentUser: User
+
+    departments (organisationId: String!, first: Int, last: Int, after: String): DepartmentConnection
+    department (id: String!): Department
 }
 
 type Mutation {
-    createOrganization (input: OrganizationInput!): Organization
-    updateOrganization (id: String!, name: String!): Organization
-    deleteOrganization (id: String!): Boolean
+    createOrganisation (input: OrganisationInput!): Organisation
+    organisationAddUser (organisationId: String!, email: String!): Organisation
+
+    createDepartment (organisationId: String!, name: String!): Department
+    departmentAddUser (departmentId: String!, email: String!): Department
 
     login (input: LoginInput!): LoginResponse
     register (input: RegisterInput!): LoginResponse

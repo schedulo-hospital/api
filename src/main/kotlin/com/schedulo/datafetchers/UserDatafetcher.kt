@@ -39,6 +39,10 @@ class UserDataFetcher(
     suspend fun login(@InputArgument input : LoginInput): LoginResponse {
         val user = userRepository.findByEmail(input.email) ?: throw DgsEntityNotFoundException("User does not exist")
 
+        if (!user.registered) {
+            throw DgsBadRequestException("User not registered yet")
+        }
+
         if (!bCryptPasswordEncoder.matches(input.password, user.password)) {
             throw DgsBadRequestException("Wrong password")
         }
@@ -49,13 +53,24 @@ class UserDataFetcher(
 
     @DgsMutation
     suspend fun register(@InputArgument input : RegisterInput): LoginResponse {
-        val exists = userRepository.findByEmail(input.email)
+        var exists = userRepository.findByEmail(input.email)
 
         if (exists != null) {
+            // if user exists and registered false, change to true
+            if (!exists.registered) {
+                exists.registered = true
+                exists.name = input.name ?: ""
+                exists.password = bCryptPasswordEncoder.encode(input.password)
+                userRepository.save(exists)
+
+                val token = jwtUtil.generateToken(User(id = exists.id.toString(), name = exists.name, email = exists.email))
+                return LoginResponse(token = token, user = User(id = exists.id.toString(), name = exists.name, email = exists.email))
+            }
+
             throw UserAlreadyExistsException("User already exists")
         }
 
-        val user = userRepository.save(UserModel(email = input.email, password = bCryptPasswordEncoder.encode(input.password), name = input.name ?: ""))
+        val user = userRepository.save(UserModel(email = input.email, password = bCryptPasswordEncoder.encode(input.password), name = input.name ?: "", registered = true))
 
         val token = jwtUtil.generateToken(User(id = user.id.toString(), name = user.name, email = user.email))
         return LoginResponse(token = token, user = User(id = user.id.toString(), name = user.name, email = user.email))
