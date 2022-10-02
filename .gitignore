@@ -10,6 +10,7 @@ build/
 .classpath
 .factorypath
 .project
+.next
 .settings
 .springBeans
 .sts4-cache
@@ -22,6 +23,8 @@ bin/
 *.iws
 *.iml
 *.ipr
+*.log
+*.lock
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
