@@ -1,0 +1,10 @@
+{
+  "HospitalMainTitle": "Schedulo hospital main",
+  "logout": "Log out",
+  "sch_login.save": "Login",
+  "sch_login.cancel": "Cancel",
+  "sch_login.formtitle":"Login form",
+  "sch_login.descr":"",
+  "sch_login.name":"Username",
+  "sch_login.pwd":"Password"
+}

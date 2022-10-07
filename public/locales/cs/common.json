@@ -1,0 +1,11 @@
+{
+  "HospitalMainTitle": "Schedulo hospital main",
+  "logout": "Odhlasit se",
+  "sch_login.save": "Přihlásit",
+  "sch_login.cancel": "Zrušit",
+  "sch_login.formtitle":"Přihlašovací formulář",
+  "sch_login.descr":"",
+  "sch_login.name":"Uživatelské jméno",
+  "sch_login.pwd":"Heslo"
+  
+}
