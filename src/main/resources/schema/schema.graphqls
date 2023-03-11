@@ -29,6 +29,7 @@ type User @connection {
     id: String!
     name: String!
     email: String!
+    seniority: String
 }
 
 type LoginResponse {

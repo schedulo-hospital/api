@@ -88,7 +88,7 @@ class DepartmentDataFetcher(
 
         var user = userRepository.findByEmail(email)
         if (user == null) {
-            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false))
+            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false, seniority = ""))
         }
 
         departmentUserRepository.save(DepartmentUserModel(departmentId = department.id, organisationId = department.organisationId, userId = user.id, role = Role.User))

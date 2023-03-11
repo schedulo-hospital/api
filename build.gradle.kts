@@ -32,6 +32,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-devtools")
 
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+	implementation("org.optaplanner:optaplanner-spring-boot-starter:8.35.0.Final")
 
 	implementation("io.jsonwebtoken:jjwt:0.9.1")
 	implementation("javax.xml.bind:jaxb-api:2.1")

@@ -75,7 +75,7 @@ class OrganizationDataFetcher(
 
         var user = userRepository.findByEmail(email)
         if (user == null) {
-            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false))
+            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false, seniority = ""))
         }
 
         organisationUserRepository.save(OrganisationUserModel(organisationId = ObjectId(organisationId), userId = user.id, role = Role.User))

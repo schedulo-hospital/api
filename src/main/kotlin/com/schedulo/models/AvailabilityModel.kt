@@ -1,23 +1,24 @@
 package com.schedulo.models
 
 import org.bson.types.ObjectId
-import java.time.LocalDateTime
-
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-
+import java.time.LocalDateTime
 import org.optaplanner.core.api.domain.lookup.PlanningId
 
+enum class AvailabilityType {
+        DESIRED, UNDESIRED, UNAVAILABLE
+}
+
 @Document
-data class UserModel (
-        @Id
+data class AvailabilityModel (
         @PlanningId
+        @Id
         val id: ObjectId = ObjectId.get(),
-        var name: String,
-        val email: String,
-        var password: String,
-        var registered: Boolean,
-        val seniority: String? = null,
+        val userId: ObjectId,
+        val date: LocalDateTime,
+        val type: AvailabilityType,
+
         val createdDate: LocalDateTime = LocalDateTime.now(),
-        var modifiedDate: LocalDateTime = LocalDateTime.now()
+        val modifiedDate: LocalDateTime = LocalDateTime.now()
 )

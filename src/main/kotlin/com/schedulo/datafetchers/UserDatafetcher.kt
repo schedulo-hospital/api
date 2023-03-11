@@ -70,7 +70,7 @@ class UserDataFetcher(
             throw UserAlreadyExistsException("User already exists")
         }
 
-        val user = userRepository.save(UserModel(email = input.email, password = bCryptPasswordEncoder.encode(input.password), name = input.name ?: "", registered = true))
+        val user = userRepository.save(UserModel(email = input.email, password = bCryptPasswordEncoder.encode(input.password), name = input.name ?: "", registered = true, seniority = ""))
 
         val token = jwtUtil.generateToken(User(id = user.id.toString(), name = user.name, email = user.email))
         return LoginResponse(token = token, user = User(id = user.id.toString(), name = user.name, email = user.email))
