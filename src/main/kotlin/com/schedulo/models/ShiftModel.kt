@@ -13,21 +13,32 @@ import java.time.LocalDateTime
 
 @PlanningEntity
 @Document
-data class ShiftModel (
+class ShiftModel {
   @Id
   @PlanningId
-  var id: String,
+  var id: ObjectId = ObjectId.get()
 
-  var start: LocalDateTime,
-  var end: LocalDateTime,
+  var start: LocalDateTime? = null
+  var end: LocalDateTime? = null
 
-  var location: String,
-  var requiredSeniority: String,
+  // var location: String
+  var requiredSeniority: String? = null
 
   @DocumentReference
-  var schedule: ScheduleModel,
+  var schedule: ScheduleModel? = null
 
   @PlanningVariable
   @DocumentReference
-  var user: UserModel,
-)
+  var user: UserModel? = null
+
+  constructor()
+
+  constructor(start: LocalDateTime?, end: LocalDateTime?, requiredSeniority: String?, schedule: ScheduleModel?) {
+    this.start = start
+    this.end = end
+    this.requiredSeniority = requiredSeniority
+    this.schedule = schedule
+  }
+
+  override fun toString(): String = "ShiftModel($id)"
+}

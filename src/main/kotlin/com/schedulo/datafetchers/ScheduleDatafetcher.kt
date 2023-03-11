@@ -20,11 +20,14 @@ import org.bson.types.ObjectId
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.context.SecurityContextHolder
 import org.optaplanner.core.api.solver.SolverManager
+import java.time.LocalDateTime
 
 @DgsComponent
 class ScheduleDataFetcher(
         private val scheduleRepository: ScheduleRepository,
         private val shiftRepository: ShiftRepository,
+        private val availabilityRepository: AvailabilityRepository,
+        private val userRepository: UserRepository,
         val solverManager: SolverManager<ScheduleModel, String>
 ) {
     @Secured(*arrayOf("ROLE_USER"))
@@ -44,16 +47,31 @@ class ScheduleDataFetcher(
     }
 
     protected fun findById(id: String): ScheduleModel {
-      val schedule = scheduleRepository.findById(id)
-      return schedule.get()
+      var schedule = ScheduleModel()
+
+      var availabilities = availabilityRepository.findAll()
+      var users = userRepository.findAll()
+
+      schedule.availablity = availabilities
+      schedule.users = users
+      schedule.shifts = listOf(
+        ShiftModel(start = LocalDateTime.of(2023, 3, 11, 0, 0), end = LocalDateTime.of(2023, 3, 11, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 12, 0, 0), end = LocalDateTime.of(2023, 3, 12, 23, 0), requiredSeniority = "JUNIOR", schedule = schedule),
+      )
+      // TODO move requiredSeniority to schedule
+
+      return schedule
   }
 
   protected fun save(schedule: ScheduleModel) {
+    println("Saving schedule: ${schedule.id}")
+    println(schedule.score)
     schedule.shifts?.forEach { shift ->
-      val dbShift = shiftRepository.findById(shift.id).get()
-      dbShift.user = shift.user
-
-      shiftRepository.save(shift)
+      // val dbShift = shiftRepository.findById(shift.id).get()
+      // dbShift.user = shift.user
+      println(shift.start)
+      println(shift.user?.name)
+      // shiftRepository.save(shift)
     }
   }
 }

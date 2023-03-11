@@ -16,28 +16,32 @@ import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore
 
 @PlanningSolution
 @Document
-data class ScheduleModel (
+class ScheduleModel {
         @Id
-        val id: ObjectId = ObjectId.get(),
-        var name: String,
-        var start: LocalDateTime,
-        var end: LocalDateTime,
-        val createdDate: LocalDateTime = LocalDateTime.now(),
-        var modifiedDate: LocalDateTime = LocalDateTime.now(),
+        val id: ObjectId = ObjectId.get()
+        var name: String? = null
+        var start: LocalDateTime? = null
+        var end: LocalDateTime? = null
+        val createdDate: LocalDateTime = LocalDateTime.now()
+        var modifiedDate: LocalDateTime = LocalDateTime.now()
 
         @DocumentReference
-        var department: DepartmentModel,
+        var department: DepartmentModel? = null
 
         @ProblemFactCollectionProperty
-        var availablity: List<AvailabilityModel>?,
+        var availablity: List<AvailabilityModel>? = null
 
         @ProblemFactCollectionProperty
         @ValueRangeProvider
-        var users: List<UserModel>?,
+        var users: List<UserModel>? = null
 
         @PlanningEntityCollectionProperty
-        var shifts: List<ShiftModel>?,
+        var shifts: List<ShiftModel>? = null
 
         @PlanningScore
-        var score: HardSoftScore?
-)
+        var score: HardSoftScore? = null
+
+        constructor()
+
+        override fun toString(): String = "ScheduleModel($id)"
+}

@@ -12,12 +12,14 @@ import org.optaplanner.core.api.domain.lookup.PlanningId
 data class UserModel (
         @Id
         @PlanningId
-        val id: ObjectId = ObjectId.get(),
-        var name: String,
-        val email: String,
-        var password: String,
-        var registered: Boolean,
-        val seniority: String? = null,
+        var id: ObjectId = ObjectId.get(),
+        var name: String = "",
+        var email: String = "",
+        var password: String? = null,
+        var registered: Boolean = false,
+        var seniority: String? = null,
         val createdDate: LocalDateTime = LocalDateTime.now(),
         var modifiedDate: LocalDateTime = LocalDateTime.now()
-)
+) {
+
+}
