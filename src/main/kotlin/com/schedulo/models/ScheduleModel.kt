@@ -5,7 +5,7 @@ import org.bson.types.ObjectId
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.mongodb.core.mapping.DBRef
+import org.springframework.data.mongodb.core.mapping.DocumentReference
 
 import org.optaplanner.core.api.domain.solution.PlanningEntityCollectionProperty
 import org.optaplanner.core.api.domain.solution.PlanningScore
@@ -26,16 +26,16 @@ data class ScheduleModel (
         var modifiedDate: LocalDateTime = LocalDateTime.now(),
 
         @ProblemFactCollectionProperty
-        @DBRef
+        @DocumentReference
         var availablity: List<AvailabilityModel>,
 
         @ProblemFactCollectionProperty
         @ValueRangeProvider
-        @DBRef
+        @DocumentReference
         var users: List<UserModel>,
 
         @PlanningEntityCollectionProperty
-        @DBRef
+        @DocumentReference
         var shifts: List<ShiftModel>,
 
         @PlanningScore

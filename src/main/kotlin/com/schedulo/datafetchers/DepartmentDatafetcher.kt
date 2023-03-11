@@ -23,6 +23,7 @@ class DepartmentDataFetcher(
         private val departmentRepository: DepartmentRepository,
         private val departmentUserRepository: DepartmentUserRepository,
         private val organisationUserRepository: OrganisationUserRepository,
+        private val organisationRepository: OrganisationRepository,
         private val userRepository: UserRepository,
 ) {
     @Secured(*arrayOf("ROLE_USER"))
@@ -30,9 +31,10 @@ class DepartmentDataFetcher(
     suspend fun departments(env: DataFetchingEnvironment, @InputArgument organisationId: String): Connection<Department> {
         val user: User = SecurityContextHolder.getContext().authentication.principal as User
 
+        // does it really throw error if not found?
         val organisationUser = organisationUserRepository.findByUserIdAndOrganisationId(userId = ObjectId(user.id), organisationId = ObjectId(organisationId))
         val departmentUsers = departmentUserRepository.findByUserIdAndOrganisationId(userId = ObjectId(user.id), organisationId = ObjectId(organisationId))
-        if (organisationUser == null && departmentUsers.isEmpty()) {
+        if (departmentUsers.isEmpty()) {
             throw DgsBadRequestException("User does not belong to any department in this organisation")
         }
 
@@ -62,12 +64,14 @@ class DepartmentDataFetcher(
         val user: User = SecurityContextHolder.getContext().authentication.principal as User
 
         val organisationUser = organisationUserRepository.findByUserIdAndOrganisationId(userId = ObjectId(user.id), organisationId = ObjectId(organisationId))
-        if (organisationUser == null || organisationUser.role !== Role.Admin) {
+        if (organisationUser.role !== Role.Admin) {
             throw DgsBadRequestException("Organisation does not exist or you do not have permission to create departments")
         }
 
-        val department = departmentRepository.save(DepartmentModel(name = name, organisationId = ObjectId(organisationId), createdBy = ObjectId(user.id)))
-        departmentUserRepository.save(DepartmentUserModel(organisationId = ObjectId(organisationId), departmentId = department.id, userId = ObjectId(user.id), role = Role.Admin))
+        var dbUser = userRepository.findById(user.id).get()
+        val organisation = organisationRepository.findById(organisationId).get()
+        val department = departmentRepository.save(DepartmentModel(name = name, organisation = organisation, createdBy = ObjectId(user.id)))
+        departmentUserRepository.save(DepartmentUserModel(organisation = organisation, department = department, user = dbUser, role = Role.Admin))
 
         return Organisation(id = department.id.toString(), name = department.name, createdBy = department.createdBy.toString())
     }
@@ -81,17 +85,18 @@ class DepartmentDataFetcher(
         // TODO handle exceptions
         val department = departmentRepository.findById(departmentId).get()
         val departmentUser = departmentUserRepository.findByUserIdAndDepartmentId(ObjectId(currentUser.id), ObjectId(departmentId))
-        val organisationUser = organisationUserRepository.findByUserIdAndOrganisationId(ObjectId(currentUser.id), department.organisationId)
-        if ((organisationUser == null && departmentUser == null) || (organisationUser.role !== Role.Admin && departmentUser.role !== Role.Admin)) {
+        val organisationUser = organisationUserRepository.findByUserIdAndOrganisationId(ObjectId(currentUser.id), department.organisation.id)
+        if (organisationUser.role !== Role.Admin && departmentUser.role !== Role.Admin) {
             throw DgsBadRequestException("You do not have permission to add users")
         }
 
         var user = userRepository.findByEmail(email)
         if (user == null) {
-            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false, seniority = ""))
+            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false, seniority = "")) as UserModel
         }
 
-        departmentUserRepository.save(DepartmentUserModel(departmentId = department.id, organisationId = department.organisationId, userId = user.id, role = Role.User))
+        val organisation = organisationRepository.findById(department.organisation.id.toString()).get()
+        departmentUserRepository.save(DepartmentUserModel(department = department, organisation = organisation, user = user, role = Role.User))
 
         return Department(id = department.id.toString(), name = department.name, createdBy = department.createdBy.toString())
     }

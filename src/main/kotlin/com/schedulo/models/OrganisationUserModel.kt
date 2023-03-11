@@ -3,7 +3,7 @@ package com.schedulo.models
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.mongodb.core.mapping.DBRef
+import org.springframework.data.mongodb.core.mapping.DocumentReference
 import java.time.LocalDateTime
 
 enum class Role {
@@ -15,9 +15,9 @@ enum class Role {
 data class OrganisationUserModel (
         @Id
         val id: ObjectId = ObjectId.get(),
-        @DBRef
+        @DocumentReference
         val organisation: OrganisationModel,
-        @DBRef
+        @DocumentReference
         val user: UserModel,
         val role: Role,
         val createdDate: LocalDateTime = LocalDateTime.now(),

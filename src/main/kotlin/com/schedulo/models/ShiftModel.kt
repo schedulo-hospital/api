@@ -2,7 +2,7 @@ package com.schedulo.models
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.mongodb.core.mapping.DBRef
+import org.springframework.data.mongodb.core.mapping.DocumentReference
 
 import org.optaplanner.core.api.domain.entity.PlanningEntity
 import org.optaplanner.core.api.domain.lookup.PlanningId
@@ -25,6 +25,6 @@ data class ShiftModel (
   var requiredSeniority: String,
 
   @PlanningVariable
-  @DBRef
+  @DocumentReference
   var user: UserModel,
 )

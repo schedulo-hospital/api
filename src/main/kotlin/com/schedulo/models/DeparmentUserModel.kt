@@ -1,20 +1,21 @@
 package com.schedulo.models
 
 import org.bson.types.ObjectId
+import java.time.LocalDateTime
+
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
-import java.time.LocalDateTime
-import org.springframework.data.mongodb.core.mapping.DBRef
+import org.springframework.data.mongodb.core.mapping.DocumentReference
 
 @Document
 data class DepartmentUserModel (
         @Id
         val id: ObjectId = ObjectId.get(),
-        @DBRef
+        @DocumentReference
         val organisation: OrganisationModel,
-        @DBRef
+        @DocumentReference
         val department: DepartmentModel,
-        @DBRef
+        @DocumentReference
         val user: UserModel,
         val role: Role,
         val createdDate: LocalDateTime = LocalDateTime.now(),
