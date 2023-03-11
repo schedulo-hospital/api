@@ -67,8 +67,10 @@ class OrganizationDataFetcher(
 
         // check user is organisation Admin
         val organisationUser = organisationUserRepository.findByUserIdAndOrganisationId(ObjectId(currentUser.id), ObjectId(organisationId))
-        if (organisationUser == null || organisationUser.role !== Role.Admin) {
-            throw DgsBadRequestException("Organisation does not exist or you do not have permission to add users")
+
+        print(message = "Organisation user role: ${organisationUser.role}")
+        if (organisationUser.role !== Role.Admin) {
+            throw DgsBadRequestException("User is not an organisation admin.")
         }
 
         var user = userRepository.findByEmail(email)
