@@ -1,3 +1,5 @@
+scalar Date
+
 input OrganisationInput {
     name: String!
 }
@@ -37,13 +39,41 @@ type LoginResponse {
     user: User!
 }
 
+type Schedule {
+    id: String!
+}
+
+enum AvailabilityType {
+    DESIRED
+    UNDESIRED
+    UNAVAILABLE
+}
+
+type Availability {
+    id: String!
+    date: Date!
+    type: AvailabilityType!
+}
+
+input AvailabilityInput {
+    userId: String!
+    date: Date!
+    type: AvailabilityType!
+}
+
 type Query {
     organisations (first: Int, last: Int, after: String): OrganisationConnection
     organisation (id: String!): Organisation
+    
     currentUser: User
+    login (input: LoginInput!): LoginResponse
 
     departments (organisationId: String!, first: Int, last: Int, after: String): DepartmentConnection
     department (id: String!): Department
+
+    schedule (id: String!): Schedule
+
+    availabilities (from: Date!, to: Date!): [Availability]
 }
 
 type Mutation {
@@ -52,7 +82,11 @@ type Mutation {
 
     createDepartment (organisationId: String!, name: String!): Department
     departmentAddUser (departmentId: String!, email: String!): Department
-
-    login (input: LoginInput!): LoginResponse
+    
     register (input: RegisterInput!): LoginResponse
+
+    startSolving (scheduleId: String!): Boolean
+    stopSolving (scheduleId: String!): Boolean
+
+    setAvailability (input: AvailabilityInput!): Availability
 }

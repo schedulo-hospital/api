@@ -35,7 +35,7 @@ class UserDataFetcher(
         return User(id = dbUser.id.toString(), name = dbUser.name, email = dbUser.email)
     }
 
-    @DgsMutation
+    @DgsQuery
     suspend fun login(@InputArgument input : LoginInput): LoginResponse {
         val user = userRepository.findByEmail(input.email) ?: throw DgsEntityNotFoundException("User does not exist")
 

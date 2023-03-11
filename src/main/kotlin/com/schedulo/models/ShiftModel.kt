@@ -16,13 +16,16 @@ import java.time.LocalDateTime
 data class ShiftModel (
   @Id
   @PlanningId
-  var id:Long,
+  var id: String,
 
   var start: LocalDateTime,
   var end: LocalDateTime,
 
   var location: String,
   var requiredSeniority: String,
+
+  @DocumentReference
+  var schedule: ScheduleModel,
 
   @PlanningVariable
   @DocumentReference

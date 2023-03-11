@@ -4,7 +4,6 @@ import java.time.Duration
 import java.time.LocalDateTime
 
 import com.schedulo.models.AvailabilityModel
-import com.schedulo.models.AvailabilityType
 import com.schedulo.models.ShiftModel
 
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore

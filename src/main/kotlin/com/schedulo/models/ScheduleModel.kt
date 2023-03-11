@@ -25,19 +25,19 @@ data class ScheduleModel (
         val createdDate: LocalDateTime = LocalDateTime.now(),
         var modifiedDate: LocalDateTime = LocalDateTime.now(),
 
-        @ProblemFactCollectionProperty
         @DocumentReference
-        var availablity: List<AvailabilityModel>,
+        var department: DepartmentModel,
+
+        @ProblemFactCollectionProperty
+        var availablity: List<AvailabilityModel>?,
 
         @ProblemFactCollectionProperty
         @ValueRangeProvider
-        @DocumentReference
-        var users: List<UserModel>,
+        var users: List<UserModel>?,
 
         @PlanningEntityCollectionProperty
-        @DocumentReference
-        var shifts: List<ShiftModel>,
+        var shifts: List<ShiftModel>?,
 
         @PlanningScore
-        var score: HardSoftScore
+        var score: HardSoftScore?
 )
