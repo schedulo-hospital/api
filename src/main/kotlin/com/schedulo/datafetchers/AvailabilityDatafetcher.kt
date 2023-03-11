@@ -31,14 +31,23 @@ class AvailabilityDataFetcher(
     @Secured(*arrayOf("ROLE_USER"))
     @DgsQuery
     suspend fun availabilities(@InputArgument from: LocalDate, @InputArgument to: LocalDate): List<AvailabilityModel> {
-      return availablityRepository.findAllByDateBetween(from, to)
+      val user: User = SecurityContextHolder.getContext().getAuthentication().getPrincipal() as User
+      val dbUser = userRepository.findById(user.id).get()
+
+      return availablityRepository.findAllByDateBetweenAndUser(from, to, dbUser)
     }
 
     @Secured(*arrayOf("ROLE_USER"))
     @DgsMutation
     suspend fun setAvailability(@InputArgument input: AvailabilityInput): AvailabilityModel {
       // TODO check if user is admin when adding with input.userId take user from token otherwise
-      val dbUser = userRepository.findById(input.userId).get()
+      var userId = input.userId
+      if (userId == null) {
+        val user: User = SecurityContextHolder.getContext().getAuthentication().getPrincipal() as User
+        userId = user.id
+      }
+      
+      val dbUser = userRepository.findById(userId).get()
 
       var availability = availablityRepository.findByUserAndDate(dbUser, input.date)
       if (availability != null) {

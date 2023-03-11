@@ -25,7 +25,6 @@ class UserDataFetcher(
     private val userRepository: UserRepository,
     val bCryptPasswordEncoder: BCryptPasswordEncoder
 ) {
-
     @Secured(*arrayOf("ROLE_USER"))
     @DgsQuery
     suspend fun currentUser(): User {
@@ -35,7 +34,7 @@ class UserDataFetcher(
         return User(id = dbUser.id.toString(), name = dbUser.name, email = dbUser.email)
     }
 
-    @DgsQuery
+    @DgsMutation
     suspend fun login(@InputArgument input : LoginInput): LoginResponse {
         val user = userRepository.findByEmail(input.email) ?: throw DgsEntityNotFoundException("User does not exist")
 
