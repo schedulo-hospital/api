@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder
 import org.optaplanner.core.api.solver.SolverManager
 import java.time.OffsetDateTime
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @DgsComponent
 class AvailabilityDataFetcher(

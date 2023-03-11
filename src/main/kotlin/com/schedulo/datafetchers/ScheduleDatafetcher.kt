@@ -56,7 +56,18 @@ class ScheduleDataFetcher(
       schedule.users = users
       schedule.shifts = listOf(
         ShiftModel(start = LocalDateTime.of(2023, 3, 11, 0, 0), end = LocalDateTime.of(2023, 3, 11, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 12, 0, 0), end = LocalDateTime.of(2023, 3, 12, 23, 0), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 12, 0, 0), end = LocalDateTime.of(2023, 3, 12, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 13, 0, 0), end = LocalDateTime.of(2023, 3, 13, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 14, 0, 0), end = LocalDateTime.of(2023, 3, 14, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 15, 0, 0), end = LocalDateTime.of(2023, 3, 15, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 16, 0, 0), end = LocalDateTime.of(2023, 3, 16, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 17, 0, 0), end = LocalDateTime.of(2023, 3, 17, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 18, 0, 0), end = LocalDateTime.of(2023, 3, 18, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 19, 0, 0), end = LocalDateTime.of(2023, 3, 19, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 20, 0, 0), end = LocalDateTime.of(2023, 3, 20, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 21, 0, 0), end = LocalDateTime.of(2023, 3, 21, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 22, 0, 0), end = LocalDateTime.of(2023, 3, 22, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
+        ShiftModel(start = LocalDateTime.of(2023, 3, 23, 0, 0), end = LocalDateTime.of(2023, 3, 23, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
       )
       // TODO move requiredSeniority to schedule
 
