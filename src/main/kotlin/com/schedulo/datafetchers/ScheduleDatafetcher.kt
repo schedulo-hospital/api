@@ -24,11 +24,11 @@ import java.time.LocalDateTime
 
 @DgsComponent
 class ScheduleDataFetcher(
-        private val scheduleRepository: ScheduleRepository,
-        private val shiftRepository: ShiftRepository,
-        private val availabilityRepository: AvailabilityRepository,
-        private val userRepository: UserRepository,
-        val solverManager: SolverManager<ScheduleModel, String>
+    private val scheduleRepository: ScheduleRepository,
+    private val shiftRepository: ShiftRepository,
+    private val availabilityRepository: AvailabilityRepository,
+    private val userRepository: UserRepository,
+    val solverManager: SolverManager<ScheduleModel, String>
 ) {
     @Secured(*arrayOf("ROLE_USER"))
     @DgsMutation
