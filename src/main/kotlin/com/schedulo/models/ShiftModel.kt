@@ -21,7 +21,6 @@ class ShiftModel {
   var start: LocalDateTime? = null
   var end: LocalDateTime? = null
 
-  // var location: String
   var requiredSeniority: String? = null
 
   @DocumentReference
@@ -29,7 +28,7 @@ class ShiftModel {
 
   @PlanningVariable
   @DocumentReference
-  var user: UserModel? = null
+  var user: DepartmentUserModel? = null
 
   constructor()
 

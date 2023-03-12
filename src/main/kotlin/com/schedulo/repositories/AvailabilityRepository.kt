@@ -8,4 +8,5 @@ import java.time.LocalDate
 interface AvailabilityRepository : MongoRepository<AvailabilityModel, String> {
   fun findAllByDateBetweenAndUser(from: LocalDate, to: LocalDate, user: UserModel): List<AvailabilityModel>
   fun findByUserAndDate(user: UserModel, date: LocalDate): AvailabilityModel?
+  fun findAllByUserId(user: List<String>): List<AvailabilityModel>
 }

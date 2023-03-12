@@ -43,8 +43,10 @@ tasks.withType<com.netflix.graphql.dgs.codegen.gradle.GenerateJavaTask> {
     generateClient = false
     packageName = "com.schedulo.generated"
 		typeMapping = mutableMapOf<String, String>(
-    "OrganisationConnection" to "graphql.relay.SimpleListConnection<Organisation>",
-				"DepartmentConnection" to "graphql.relay.SimpleListConnection<Department>"
+			"OrganisationConnection" to "graphql.relay.SimpleListConnection<Organisation>",
+			"DepartmentConnection" to "graphql.relay.SimpleListConnection<Department>",
+			"UserConnection" to "graphql.relay.SimpleListConnection<User>",
+			"ScheduleConnection" to "graphql.relay.SimpleListConnection<Schedule>"
   )
 }
 

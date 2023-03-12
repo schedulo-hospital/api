@@ -6,5 +6,5 @@ import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 
 interface DepartmentRepository : MongoRepository<DepartmentModel, String> {
-    fun findAllByOrganisationId(organisationId: ObjectId): List<DepartmentModel>
+    fun findAllByOrganisation(organisation: OrganisationModel): List<DepartmentModel>
 }

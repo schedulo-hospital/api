@@ -31,7 +31,8 @@ class OrganizationDataFetcher(
     suspend fun organisations(env: DataFetchingEnvironment): Connection<Organisation> {
         val user: User = SecurityContextHolder.getContext().authentication.principal as User
 
-        val organisationsUsers = organisationUserRepository.findByUserId(ObjectId(user.id))
+        val dbUser = userRepository.findById(user.id).get()
+        val organisationsUsers = organisationUserRepository.findByUserId(dbUser)
         val organisations = organisationRepository.findAllById(organisationsUsers.map{ it.organisation.id.toString() }).toList()
 
         return SimpleListConnection(organisations.map { it ->
@@ -66,8 +67,10 @@ class OrganizationDataFetcher(
     suspend fun organisationAddUser(@InputArgument organisationId : String, @InputArgument email : String): Organisation {
         val currentUser: User = SecurityContextHolder.getContext().authentication.principal as User
 
+        val dbUser = userRepository.findById(currentUser.id).get()
+        val organisation = organisationRepository.findById(organisationId).get()
         // check user is organisation Admin
-        val organisationUser = organisationUserRepository.findByUserIdAndOrganisationId(ObjectId(currentUser.id), ObjectId(organisationId))
+        val organisationUser = organisationUserRepository.findByUserIdAndOrganisationId(dbUser, organisation)
 
         print(message = "Organisation user role: ${organisationUser.role}")
         if (organisationUser.role !== Role.Admin) {
@@ -76,10 +79,9 @@ class OrganizationDataFetcher(
 
         var user = userRepository.findByEmail(email)
         if (user == null) {
-            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false, seniority = "")) as UserModel
+            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false)) as UserModel
         }
 
-        val organisation = organisationRepository.findById(organisationId).get()
         organisationUserRepository.save(OrganisationUserModel(organisation = organisation, user = user, role = Role.User))
 
         return Organisation(id = organisation.id.toString(), name = organisation.name, createdBy = organisation.createdBy.toString())

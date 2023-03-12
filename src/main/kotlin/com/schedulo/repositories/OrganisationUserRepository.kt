@@ -2,10 +2,11 @@ package com.schedulo.repositories
 
 import com.schedulo.models.OrganisationModel
 import com.schedulo.models.OrganisationUserModel
+import com.schedulo.models.UserModel
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
 
 interface OrganisationUserRepository : MongoRepository<OrganisationUserModel, String> {
-    fun findByUserId(userId: ObjectId): List<OrganisationUserModel>
-    fun findByUserIdAndOrganisationId(userId: ObjectId, organisationId: ObjectId): OrganisationUserModel
+    fun findByUserId(user: UserModel): List<OrganisationUserModel>
+    fun findByUserIdAndOrganisationId(user: UserModel, organisation: OrganisationModel): OrganisationUserModel
 }

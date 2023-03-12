@@ -9,10 +9,13 @@ import com.netflix.graphql.dgs.InputArgument
 import com.netflix.graphql.dgs.exceptions.DgsBadRequestException
 import com.schedulo.generated.types.Department
 import com.schedulo.generated.types.User
+import com.schedulo.generated.types.Schedule
+import com.schedulo.generated.types.Seniority
 import com.schedulo.models.*
 import com.schedulo.repositories.*
 import com.schedulo.repositories.ScheduleRepository
 import com.schedulo.repositories.ShiftRepository
+import com.schedulo.repositories.DepartmentUserRepository
 import graphql.relay.Connection
 import graphql.relay.SimpleListConnection
 import graphql.schema.DataFetchingEnvironment
@@ -20,7 +23,10 @@ import org.bson.types.ObjectId
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.core.context.SecurityContextHolder
 import org.optaplanner.core.api.solver.SolverManager
+import org.optaplanner.core.api.score.ScoreManager
+import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore
 import java.time.LocalDateTime
+import java.time.LocalDate
 
 @DgsComponent
 class ScheduleDataFetcher(
@@ -28,8 +34,63 @@ class ScheduleDataFetcher(
     private val shiftRepository: ShiftRepository,
     private val availabilityRepository: AvailabilityRepository,
     private val userRepository: UserRepository,
-    val solverManager: SolverManager<ScheduleModel, String>
+    private val departmentUserRepository: DepartmentUserRepository,
+    private val departmentRepository: DepartmentRepository,
+    val solverManager: SolverManager<ScheduleModel, String>,
+    val scoreManager: ScoreManager<ScheduleModel, HardSoftScore>
 ) {
+    @Secured(*arrayOf("ROLE_USER"))
+    @DgsQuery
+    suspend fun schedules(env: DataFetchingEnvironment, @InputArgument departmentId: String): Connection<Schedule> {
+        val user: User = SecurityContextHolder.getContext().authentication.principal as User
+        // TODO check if user can see schedules - Admin only?
+
+        val department = departmentRepository.findById(departmentId).get()
+        val schedules = scheduleRepository.findByDepartment(department)
+
+        return SimpleListConnection(schedules.map { it ->
+            Schedule(id = it.id.toString(), start = LocalDate.of(it.start?.year as Int, it.start?.month, it.start?.dayOfMonth as Int), end = LocalDate.of(it.end?.year as Int, it.end?.month, it.end?.dayOfMonth as Int), name = it.name as String)
+        }).get(env)
+    }
+
+    @Secured(*arrayOf("ROLE_USER"))
+    @DgsQuery
+    suspend fun schedule(@InputArgument id: String): Schedule {
+        val user: User = SecurityContextHolder.getContext().authentication.principal as User
+        // TODO check if user can see schedules - Admin only?
+
+        val schedule = scheduleRepository.findById(id).get()
+
+        return Schedule(id = schedule.id.toString(), start = LocalDate.of(schedule.start?.year as Int, schedule.start?.month, schedule.start?.dayOfMonth as Int), end = LocalDate.of(schedule.end?.year as Int, schedule.end?.month, schedule.end?.dayOfMonth as Int), name = schedule.name as String, score = schedule.solverScore)
+    }
+
+    @Secured(*arrayOf("ROLE_USER"))
+    @DgsMutation
+    suspend fun createSchedule(@InputArgument departmentId: String, @InputArgument name: String, @InputArgument start: LocalDate, @InputArgument end: LocalDate): Schedule? {
+      val department = departmentRepository.findById(departmentId).get()
+
+      val schedule = scheduleRepository.save(ScheduleModel(name = name, start = start, end = end, department = department))
+      var shifts = mutableListOf<ShiftModel>()
+
+      // For each day between start and end
+      generateSequence(start) { it.plusDays(1) }.takeWhile { it < end }.forEach {
+        val seniorities = enumValues<Seniority>()
+        for (seniority in seniorities) {
+          val shift = ShiftModel(
+            start = LocalDateTime.of(it.year, it.month, it.dayOfMonth, 0, 0),
+            end = LocalDateTime.of(it.year, it.month, it.dayOfMonth, 23, 59),
+            requiredSeniority = seniority.name,
+            schedule = schedule
+          )
+          shifts.add(shift)
+        }
+      }
+
+      shiftRepository.saveAll(shifts)
+    
+      return Schedule(id = schedule.id.toString(), start = schedule.start as LocalDate, end = schedule.end as LocalDate, name = schedule.name as String)
+    }
+
     @Secured(*arrayOf("ROLE_USER"))
     @DgsMutation
     suspend fun startSolving(@InputArgument scheduleId: String): Boolean {
@@ -47,42 +108,47 @@ class ScheduleDataFetcher(
     }
 
     protected fun findById(id: String): ScheduleModel {
-      var schedule = ScheduleModel()
+      var schedule = scheduleRepository.findById(id).get()
 
-      var availabilities = availabilityRepository.findAll()
-      var users = userRepository.findAll()
+      val department = schedule.department
 
-      schedule.availablity = availabilities
+      var users = departmentUserRepository.findByDepartment(department as DepartmentModel)
+
+      schedule.availablity = availabilityRepository.findAllByUserId(users.map { it.user.id.toString() })
       schedule.users = users
-      schedule.shifts = listOf(
-        ShiftModel(start = LocalDateTime.of(2023, 3, 11, 0, 0), end = LocalDateTime.of(2023, 3, 11, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 12, 0, 0), end = LocalDateTime.of(2023, 3, 12, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 13, 0, 0), end = LocalDateTime.of(2023, 3, 13, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 14, 0, 0), end = LocalDateTime.of(2023, 3, 14, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 15, 0, 0), end = LocalDateTime.of(2023, 3, 15, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 16, 0, 0), end = LocalDateTime.of(2023, 3, 16, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 17, 0, 0), end = LocalDateTime.of(2023, 3, 17, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 18, 0, 0), end = LocalDateTime.of(2023, 3, 18, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 19, 0, 0), end = LocalDateTime.of(2023, 3, 19, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 20, 0, 0), end = LocalDateTime.of(2023, 3, 20, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 21, 0, 0), end = LocalDateTime.of(2023, 3, 21, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 22, 0, 0), end = LocalDateTime.of(2023, 3, 22, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-        ShiftModel(start = LocalDateTime.of(2023, 3, 23, 0, 0), end = LocalDateTime.of(2023, 3, 23, 23, 59), requiredSeniority = "JUNIOR", schedule = schedule),
-      )
-      // TODO move requiredSeniority to schedule
+      schedule.shifts = shiftRepository.findAllBySchedule(schedule)
 
+      println("Loading schedule: ${schedule.id}")
+      println(schedule.id)
+      println(schedule.shifts?.size)
+      println(schedule.users?.size)
+      println(schedule.availablity?.size)
       return schedule
   }
 
   protected fun save(schedule: ScheduleModel) {
     println("Saving schedule: ${schedule.id}")
-    println(schedule.score)
-    schedule.shifts?.forEach { shift ->
-      // val dbShift = shiftRepository.findById(shift.id).get()
-      // dbShift.user = shift.user
-      println(shift.start)
-      println(shift.user?.name)
-      // shiftRepository.save(shift)
+    println(schedule.score?.toString())
+
+    var dbSchedule = scheduleRepository.findById(schedule.id.toString()).get()
+    if (schedule.score != null) {
+      dbSchedule.solverScore = schedule.score.toString()
     }
+
+    scheduleRepository.save(dbSchedule)
+
+    var shifts = mutableListOf<ShiftModel>()
+    schedule.shifts?.forEach { shift ->
+      // TODO: Load multipe shifts at once
+      val dbShift = shiftRepository.findById(shift.id.toString()).get()
+      dbShift.user = shift.user
+      println(shift.start)
+      println(shift.user?.user?.name)
+      println(shift.user?.seniority.toString())
+      println(shift.requiredSeniority.toString())
+      shifts.add(dbShift)
+    }
+
+    shiftRepository.saveAll(shifts)
   }
 }

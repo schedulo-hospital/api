@@ -12,7 +12,6 @@ import com.schedulo.generated.types.User
 import com.schedulo.generated.types.AvailabilityInput
 import com.schedulo.models.*
 import com.schedulo.repositories.*
-import com.schedulo.repositories.AvailabilityRepository
 import graphql.relay.Connection
 import graphql.relay.SimpleListConnection
 import graphql.schema.DataFetchingEnvironment

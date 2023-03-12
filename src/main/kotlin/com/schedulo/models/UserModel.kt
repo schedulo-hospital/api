@@ -17,7 +17,6 @@ data class UserModel (
         var email: String = "",
         var password: String? = null,
         var registered: Boolean = false,
-        var seniority: String? = null,
         val createdDate: LocalDateTime = LocalDateTime.now(),
         var modifiedDate: LocalDateTime = LocalDateTime.now()
 ) {
