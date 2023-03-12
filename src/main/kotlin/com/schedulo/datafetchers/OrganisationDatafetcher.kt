@@ -32,7 +32,7 @@ class OrganizationDataFetcher(
         val user: User = SecurityContextHolder.getContext().authentication.principal as User
 
         val organisationsUsers = organisationUserRepository.findByUserId(ObjectId(user.id))
-        val organisations = organisationRepository.findAllById(organisationsUsers.map{ it.organisationId.toString() }).toList()
+        val organisations = organisationRepository.findAllById(organisationsUsers.map{ it.organisation.id.toString() }).toList()
 
         return SimpleListConnection(organisations.map { it ->
             Organisation(id = it.id.toString(), name = it.name, createdBy = it.createdBy.toString())
@@ -56,7 +56,8 @@ class OrganizationDataFetcher(
         val user: User = SecurityContextHolder.getContext().authentication.principal as User
 
         val organisation = organisationRepository.save(OrganisationModel(name = input.name, createdBy = ObjectId(user.id)))
-        organisationUserRepository.save(OrganisationUserModel(organisationId = organisation.id, userId = ObjectId(user.id), role = Role.Admin))
+        val dbUser = userRepository.findById(user.id).get()
+        organisationUserRepository.save(OrganisationUserModel(organisation = organisation, user = dbUser, role = Role.Admin))
 
         return Organisation(id = organisation.id.toString(), name = organisation.name, createdBy = organisation.createdBy.toString())
     }
@@ -75,12 +76,12 @@ class OrganizationDataFetcher(
 
         var user = userRepository.findByEmail(email)
         if (user == null) {
-            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false))
+            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false, seniority = "")) as UserModel
         }
 
-        organisationUserRepository.save(OrganisationUserModel(organisationId = ObjectId(organisationId), userId = user.id, role = Role.User))
-
         val organisation = organisationRepository.findById(organisationId).get()
+        organisationUserRepository.save(OrganisationUserModel(organisation = organisation, user = user, role = Role.User))
+
         return Organisation(id = organisation.id.toString(), name = organisation.name, createdBy = organisation.createdBy.toString())
     }
 }
