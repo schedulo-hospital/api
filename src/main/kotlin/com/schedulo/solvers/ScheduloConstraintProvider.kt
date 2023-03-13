@@ -40,7 +40,7 @@ class ScheduloConstraintProvider: ConstraintProvider {
         return constraintFactory
             .forEachUniquePair(
                 ShiftModel::class.java,
-                Joiners.equal(ShiftModel::user),
+                Joiners.equal(ShiftModel::userLoaded),
                 Joiners.lessThanOrEqual(ShiftModel::end, ShiftModel::start)
             )
             .filter { shift1: ShiftModel, shift2: ShiftModel -> Duration.between(shift1.end, shift2.start).toHours() < 25 }

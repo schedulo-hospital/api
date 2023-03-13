@@ -14,6 +14,7 @@ import org.optaplanner.core.api.domain.solution.PlanningSolution
 import org.optaplanner.core.api.domain.solution.ProblemFactCollectionProperty
 import org.optaplanner.core.api.domain.valuerange.ValueRangeProvider
 import org.optaplanner.core.api.score.buildin.hardsoft.HardSoftScore
+import org.optaplanner.core.api.solver.SolverStatus
 
 @PlanningSolution
 @Document
@@ -43,6 +44,7 @@ class ScheduleModel {
         var score: HardSoftScore? = null
 
         var solverScore: String = ""
+        var solverStatus: SolverStatus = SolverStatus.NOT_SOLVING
 
         constructor()
 

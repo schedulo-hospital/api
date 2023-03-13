@@ -62,7 +62,7 @@ class ScheduleDataFetcher(
 
         val schedule = scheduleRepository.findById(id).get()
 
-        return Schedule(id = schedule.id.toString(), start = LocalDate.of(schedule.start?.year as Int, schedule.start?.month, schedule.start?.dayOfMonth as Int), end = LocalDate.of(schedule.end?.year as Int, schedule.end?.month, schedule.end?.dayOfMonth as Int), name = schedule.name as String, score = schedule.solverScore)
+        return Schedule(id = schedule.id.toString(), start = LocalDate.of(schedule.start?.year as Int, schedule.start?.month, schedule.start?.dayOfMonth as Int), end = LocalDate.of(schedule.end?.year as Int, schedule.end?.month, schedule.end?.dayOfMonth as Int), name = schedule.name as String, score = schedule.solverScore, status = schedule.solverStatus.name)
     }
 
     @Secured(*arrayOf("ROLE_USER"))
@@ -108,7 +108,7 @@ class ScheduleDataFetcher(
 
       shiftRepository.saveAll(shifts)
     
-      return Schedule(id = schedule.id.toString(), start = schedule.start as LocalDate, end = schedule.end as LocalDate, name = schedule.name as String)
+      return Schedule(id = schedule.id.toString(), start = schedule.start as LocalDate, end = schedule.end as LocalDate, name = schedule.name as String, status = schedule.solverStatus.name)
     }
 
     @Secured(*arrayOf("ROLE_USER"))
@@ -123,6 +123,11 @@ class ScheduleDataFetcher(
     @DgsMutation
     suspend fun stopSolving(@InputArgument scheduleId: String): Boolean {
       solverManager.terminateEarly(scheduleId);
+
+      var dbSchedule = scheduleRepository.findById(scheduleId).get()
+      dbSchedule.solverStatus = solverManager.getSolverStatus(scheduleId)
+
+      scheduleRepository.save(dbSchedule)
 
       return true
     }
@@ -154,6 +159,8 @@ class ScheduleDataFetcher(
     if (schedule.score != null) {
       dbSchedule.solverScore = schedule.score.toString()
     }
+
+    dbSchedule.solverStatus = solverManager.getSolverStatus(schedule.id.toString())
 
     scheduleRepository.save(dbSchedule)
 

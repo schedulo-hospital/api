@@ -99,7 +99,7 @@ class DepartmentDataFetcher(
 
     @Secured(*arrayOf("ROLE_USER"))
     @DgsMutation
-    suspend fun departmentAddUser(@InputArgument departmentId : String, @InputArgument email : String, @InputArgument seniority: Seniority): Department {
+    suspend fun departmentAddUser(@InputArgument departmentId : String, @InputArgument name: String, @InputArgument email : String, @InputArgument seniority: Seniority): Department {
         val currentUser: User = SecurityContextHolder.getContext().authentication.principal as User
         val dbUser = userRepository.findById(currentUser.id).get()
 
@@ -114,7 +114,7 @@ class DepartmentDataFetcher(
 
         var user = userRepository.findByEmail(email)
         if (user == null) {
-            user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false)) as UserModel
+            user = userRepository.save(UserModel(email = email, password = "", name = name, registered = false)) as UserModel
         }
 
         departmentUserRepository.save(DepartmentUserModel(department = department.id, organisation = department.organisation.id, user = user.id, role = Role.User, seniority = seniority))

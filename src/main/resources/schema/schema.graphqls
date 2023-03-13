@@ -45,6 +45,7 @@ type Schedule @connection {
     start: Date!
     end: Date!
     score: String
+    status: String
 }
 
 type Shift {
@@ -106,7 +107,7 @@ type Mutation {
     organisationAddUser (organisationId: String!, email: String!): Organisation
 
     createDepartment (organisationId: String!, name: String!): Department
-    departmentAddUser (departmentId: String!, email: String!, seniority: Seniority!): Department
+    departmentAddUser (departmentId: String!, name: String!, email: String!, seniority: Seniority!): Department
     
     login (input: LoginInput!): LoginResponse
     register (input: RegisterInput!): LoginResponse
