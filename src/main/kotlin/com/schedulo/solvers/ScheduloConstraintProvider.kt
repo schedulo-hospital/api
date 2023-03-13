@@ -21,18 +21,18 @@ class ScheduloConstraintProvider: ConstraintProvider {
             // Hard constraints
             requiredSeniority(constraintFactory),
             atLeast24HoursBetweenTwoShifts(constraintFactory),
-            // unavailableEmployee(constraintFactory),
+            unavailableEmployee(constraintFactory),
             // Soft constraints
-            // desiredDayForEmployee(constraintFactory),
-            // undesiredDayForEmployee(constraintFactory),
+            desiredDayForEmployee(constraintFactory),
+            undesiredDayForEmployee(constraintFactory),
         )
     }
 
     fun requiredSeniority(constraintFactory: ConstraintFactory): Constraint {
         return constraintFactory
             .forEach(ShiftModel::class.java)
-            .filter({ shift -> !(shift.user?.seniority?.name.equals(shift.requiredSeniority) as Boolean) })
-            .penalize(HardSoftScore.ONE_HARD, { _ -> 2 })
+            .filter({ shift -> !(shift.userLoaded?.seniority?.name.equals(shift.requiredSeniority) ) })
+            .penalize(HardSoftScore.ONE_HARD)
             .asConstraint("Missing required seniority")
     }
 
@@ -56,7 +56,7 @@ class ScheduloConstraintProvider: ConstraintProvider {
         return constraintFactory
             .forEach(ShiftModel::class.java)
             .join(AvailabilityModel::class.java)
-            .filter { shift: ShiftModel, availability: AvailabilityModel -> shift.start == LocalDateTime.of(availability.date.year, availability.date.month, availability.date.dayOfMonth, 0, 0, 0) && shift.user?.user == availability.user && availability.type == AvailabilityType.UNAVAILABLE }
+            .filter { shift: ShiftModel, availability: AvailabilityModel -> shift.start == LocalDateTime.of(availability.date.year, availability.date.month, availability.date.dayOfMonth, 0, 0, 0) && shift.userLoaded?.user == availability.user.id && availability.type == AvailabilityType.UNAVAILABLE }
             .penalize(HardSoftScore.ONE_HARD)
             .asConstraint("Unavailable employee");
     }
@@ -64,7 +64,7 @@ class ScheduloConstraintProvider: ConstraintProvider {
     fun desiredDayForEmployee(constraintFactory: ConstraintFactory): Constraint {
         return constraintFactory.forEach(ShiftModel::class.java)
             .join(AvailabilityModel::class.java)
-            .filter { shift: ShiftModel, availability: AvailabilityModel -> shift.start == LocalDateTime.of(availability.date.year, availability.date.month, availability.date.dayOfMonth, 0, 0, 0) && shift.user?.user == availability.user && availability.type == AvailabilityType.DESIRED }
+            .filter { shift: ShiftModel, availability: AvailabilityModel -> shift.start == LocalDateTime.of(availability.date.year, availability.date.month, availability.date.dayOfMonth, 0, 0, 0) && shift.userLoaded?.user == availability.user.id && availability.type == AvailabilityType.DESIRED }
             .reward(HardSoftScore.ONE_SOFT)
             .asConstraint("Desired day for employee");
     }
@@ -72,7 +72,7 @@ class ScheduloConstraintProvider: ConstraintProvider {
     fun undesiredDayForEmployee(constraintFactory: ConstraintFactory): Constraint {
         return constraintFactory.forEach(ShiftModel::class.java)
             .join(AvailabilityModel::class.java)
-            .filter { shift: ShiftModel, availability: AvailabilityModel -> shift.start == LocalDateTime.of(availability.date.year, availability.date.month, availability.date.dayOfMonth, 0, 0, 0) && shift.user?.user == availability.user && availability.type == AvailabilityType.UNDESIRED }
+            .filter { shift: ShiftModel, availability: AvailabilityModel -> shift.start == LocalDateTime.of(availability.date.year, availability.date.month, availability.date.dayOfMonth, 0, 0, 0) && shift.userLoaded?.user == availability.user.id && availability.type == AvailabilityType.UNDESIRED }
             .penalize(HardSoftScore.ONE_SOFT)
             .asConstraint("Undesired day for employee");
     }

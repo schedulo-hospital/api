@@ -47,6 +47,14 @@ type Schedule @connection {
     score: String
 }
 
+type Shift {
+    id: String!
+    start: Date!
+    end: Date!
+    user: User
+    requiredSeniority: Seniority!
+}
+
 enum AvailabilityType {
     DESIRED
     UNDESIRED
@@ -87,6 +95,8 @@ type Query {
 
     schedule (id: String!): Schedule
     schedules (departmentId: String!): ScheduleConnection
+
+    shifts (scheduleId: String!): [Shift!]!
 
     availabilities (from: Date!, to: Date!): [Availability!]!
 }

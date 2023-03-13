@@ -6,9 +6,16 @@ import com.schedulo.models.OrganisationModel
 import com.schedulo.models.DepartmentModel
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.repository.MongoRepository
+import org.springframework.data.mongodb.repository.Aggregation
 
 interface DepartmentUserRepository : MongoRepository<DepartmentUserModel, String> {
-    fun findByUserIdAndOrganisationId(user: UserModel, organisation: OrganisationModel): List<DepartmentUserModel>
-    fun findByUserIdAndDepartmentId(user: UserModel, department: DepartmentModel): DepartmentUserModel
-    fun findByDepartment(department: DepartmentModel): List<DepartmentUserModel>
+    fun findByUserAndOrganisation(user: ObjectId, organisation: ObjectId): List<DepartmentUserModel>
+    fun findByUserAndDepartment(user: ObjectId, department: ObjectId): DepartmentUserModel
+
+    @Aggregation(pipeline = arrayOf(
+        "{ \$match: { department: ?0 } }",
+        "{ \$lookup: { from: 'userModel', localField: 'user', foreignField: '_id', as: 'userLoaded' }}",
+        "{ \$unwind: '\$userLoaded' }",
+    ))
+    fun findByDepartment(department: ObjectId): List<DepartmentUserModel>
 }

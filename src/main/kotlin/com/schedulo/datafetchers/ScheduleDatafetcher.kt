@@ -11,6 +11,7 @@ import com.schedulo.generated.types.Department
 import com.schedulo.generated.types.User
 import com.schedulo.generated.types.Schedule
 import com.schedulo.generated.types.Seniority
+import com.schedulo.generated.types.Shift
 import com.schedulo.models.*
 import com.schedulo.repositories.*
 import com.schedulo.repositories.ScheduleRepository
@@ -65,6 +66,25 @@ class ScheduleDataFetcher(
     }
 
     @Secured(*arrayOf("ROLE_USER"))
+    @DgsQuery
+    suspend fun shifts(@InputArgument scheduleId: String): List<Shift> {
+        val user: User = SecurityContextHolder.getContext().authentication.principal as User
+        // TODO check if user can see schedules - Admin only?
+
+        val shifts = shiftRepository.findAllBySchedule(ObjectId(scheduleId))
+
+        return shifts.map { it ->
+            Shift(
+              id = it.id.toString(),
+              start = LocalDate.of(it.start?.year as Int, it.start?.month, it.start?.dayOfMonth as Int),
+              end = LocalDate.of(it.end?.year as Int, it.end?.month, it.end?.dayOfMonth as Int),
+              requiredSeniority = Seniority.valueOf(it.requiredSeniority as String),
+              user = it.userLoaded?.let { user -> User(id = user.id.toString(), name = user.userLoaded?.name as String, email = user.userLoaded?.email as String, seniority = user.seniority?.name) }
+            )
+        }
+    }
+
+    @Secured(*arrayOf("ROLE_USER"))
     @DgsMutation
     suspend fun createSchedule(@InputArgument departmentId: String, @InputArgument name: String, @InputArgument start: LocalDate, @InputArgument end: LocalDate): Schedule? {
       val department = departmentRepository.findById(departmentId).get()
@@ -80,7 +100,7 @@ class ScheduleDataFetcher(
             start = LocalDateTime.of(it.year, it.month, it.dayOfMonth, 0, 0),
             end = LocalDateTime.of(it.year, it.month, it.dayOfMonth, 23, 59),
             requiredSeniority = seniority.name,
-            schedule = schedule
+            schedule = schedule.id
           )
           shifts.add(shift)
         }
@@ -112,11 +132,11 @@ class ScheduleDataFetcher(
 
       val department = schedule.department
 
-      var users = departmentUserRepository.findByDepartment(department as DepartmentModel)
+      var users = departmentUserRepository.findByDepartment(department?.id as ObjectId)
 
-      schedule.availablity = availabilityRepository.findAllByUserId(users.map { it.user.id.toString() })
+      schedule.availablity = availabilityRepository.findAllByUserId(users.map { it.user.toString() })
       schedule.users = users
-      schedule.shifts = shiftRepository.findAllBySchedule(schedule)
+      schedule.shifts = shiftRepository.findAllBySchedule(schedule.id)
 
       println("Loading schedule: ${schedule.id}")
       println(schedule.id)
@@ -141,10 +161,10 @@ class ScheduleDataFetcher(
     schedule.shifts?.forEach { shift ->
       // TODO: Load multipe shifts at once
       val dbShift = shiftRepository.findById(shift.id.toString()).get()
-      dbShift.user = shift.user
+      dbShift.user = shift.userLoaded?.id
       println(shift.start)
-      println(shift.user?.user?.name)
-      println(shift.user?.seniority.toString())
+      println(shift.userLoaded?.userLoaded?.name)
+      println(shift.userLoaded?.seniority.toString())
       println(shift.requiredSeniority.toString())
       shifts.add(dbShift)
     }

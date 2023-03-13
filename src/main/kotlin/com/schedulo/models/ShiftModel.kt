@@ -23,16 +23,17 @@ class ShiftModel {
 
   var requiredSeniority: String? = null
 
-  @DocumentReference
-  var schedule: ScheduleModel? = null
+  var schedule: ObjectId? = null
+
+  // @DocumentReference
+  var user: ObjectId? = null
 
   @PlanningVariable
-  @DocumentReference
-  var user: DepartmentUserModel? = null
+  var userLoaded: DepartmentUserModel? = null
 
   constructor()
 
-  constructor(start: LocalDateTime?, end: LocalDateTime?, requiredSeniority: String?, schedule: ScheduleModel?) {
+  constructor(start: LocalDateTime?, end: LocalDateTime?, requiredSeniority: String?, schedule: ObjectId?) {
     this.start = start
     this.end = end
     this.requiredSeniority = requiredSeniority

@@ -36,7 +36,7 @@ class DepartmentDataFetcher(
         // does it really throw error if not found?
         val organisation = organisationRepository.findById(organisationId).get()
         val organisationUser = organisationUserRepository.findByUserIdAndOrganisationId(user = dbUser, organisation = organisation)
-        val departmentUsers = departmentUserRepository.findByUserIdAndOrganisationId(user = dbUser, organisation = organisation)
+        val departmentUsers = departmentUserRepository.findByUserAndOrganisation(user = dbUser.id, organisation = organisation.id)
         if (departmentUsers.isEmpty()) {
             throw DgsBadRequestException("User does not belong to any department in this organisation")
         }
@@ -68,14 +68,14 @@ class DepartmentDataFetcher(
         val dbUser = userRepository.findById(user.id).get()
 
         val department = departmentRepository.findById(id).get()
-        val departmentUser = departmentUserRepository.findByUserIdAndDepartmentId(user = dbUser, department = department)
+        val departmentUser = departmentUserRepository.findByUserAndDepartment(user = dbUser.id, department = department.id)
         if (departmentUser.role !== Role.Admin) {
             throw DgsBadRequestException("You do not have permission to view users")
         }
 
-        val departmentUsers = departmentUserRepository.findByDepartment(department).toList()
+        val departmentUsers = departmentUserRepository.findByDepartment(department.id).toList()
         return SimpleListConnection(departmentUsers.map { it ->
-            User(id = it.user.id.toString(), email= it.user.email, name = it.user.name, seniority = it.seniority.toString())
+            User(id = it.userLoaded?.id.toString(), email= it.userLoaded?.email as String, name = it.userLoaded?.name as String, seniority = it.seniority.toString())
         }).get(env)
     }
 
@@ -92,7 +92,7 @@ class DepartmentDataFetcher(
         }
 
         val department = departmentRepository.save(DepartmentModel(name = name, organisation = organisation, createdBy = ObjectId(user.id)))
-        departmentUserRepository.save(DepartmentUserModel(organisation = organisation, department = department, user = dbUser, role = Role.Admin, seniority = Seniority.JUNIOR))
+        departmentUserRepository.save(DepartmentUserModel(organisation = organisation.id, department = department.id, user = dbUser.id, role = Role.Admin, seniority = Seniority.JUNIOR))
 
         return Organisation(id = department.id.toString(), name = department.name, createdBy = department.createdBy.toString())
     }
@@ -106,7 +106,7 @@ class DepartmentDataFetcher(
         // check user is department or organisation Admin
         // TODO handle exceptions
         val department = departmentRepository.findById(departmentId).get()
-        val departmentUser = departmentUserRepository.findByUserIdAndDepartmentId(dbUser, department)
+        val departmentUser = departmentUserRepository.findByUserAndDepartment(dbUser.id, department.id)
         val organisationUser = organisationUserRepository.findByUserIdAndOrganisationId(dbUser, department.organisation)
         if (organisationUser.role !== Role.Admin && departmentUser.role !== Role.Admin) {
             throw DgsBadRequestException("You do not have permission to add users")
@@ -117,7 +117,7 @@ class DepartmentDataFetcher(
             user = userRepository.save(UserModel(email = email, password = "", name = "", registered = false)) as UserModel
         }
 
-        departmentUserRepository.save(DepartmentUserModel(department = department, organisation = department.organisation, user = user, role = Role.User, seniority = seniority))
+        departmentUserRepository.save(DepartmentUserModel(department = department.id, organisation = department.organisation.id, user = user.id, role = Role.User, seniority = seniority))
 
         return Department(id = department.id.toString(), name = department.name, createdBy = department.createdBy.toString())
     }
